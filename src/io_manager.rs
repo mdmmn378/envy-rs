@@ -9,6 +9,10 @@ fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
     let reader = BufReader::new(file);
     for line in reader.lines() {
         let line = line?;
+        let line = remove_comments(&line);
+        if line.is_empty() {
+            continue;
+        }
         let mut split = line.split('=');
         let key = split.next().unwrap();
         let val = split.next().unwrap();
@@ -50,6 +54,16 @@ fn generate_dot_env_string(env: IndexMap<String, String>) -> String {
     env_string
 }
 
+fn remove_comments(text: &str) -> String {
+    let mut text = text.to_string();
+    // From: # This is a comment, To: ""
+    let hash_index = text.find('#').unwrap_or(text.len());
+    let last_index = text.len();
+    text.replace_range(hash_index..last_index, "");
+    text = text.trim_end().to_string();
+    text
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,5 +94,18 @@ mod tests {
         env.insert("WORLD".to_string(), "21".to_string());
         let env_string = generate_dot_env_string(env);
         assert_eq!(env_string, "HELLO=string\nWORLD=int");
+    }
+
+    #[test]
+    fn test_remove_comments() {
+        let text = r#"# This is a comment\n"#;
+        let text = remove_comments(text);
+        assert_eq!(text, "");
+        let text = r#"HELLO=WORLD # This is a comment\n"#;
+        let text = remove_comments(text);
+        assert_eq!(text, "HELLO=WORLD");
+        let text = r#"#HELLO=WORLD # This is a comment\n"#;
+        let text = remove_comments(text);
+        assert_eq!(text, "");
     }
 }
