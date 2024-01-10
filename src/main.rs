@@ -1,3 +1,5 @@
+mod io_manager;
+
 use clap::{ArgAction, Command};
 
 fn generate(val: &clap::ArgMatches) {
