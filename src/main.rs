@@ -1,10 +1,17 @@
 mod io_manager;
 
 use clap::{ArgAction, Command};
+use colored::*;
+use io_manager::generate_dot_env_file;
 
 fn generate(val: &clap::ArgMatches) {
     let path = val.get_one::<String>("path").unwrap();
-    println!("Path: {}", path);
+    generate_dot_env_file(path).unwrap();
+    println!(
+        "{} {}",
+        "✨  Successfully generated".green(),
+        ".env.example".bold()
+    );
 }
 
 fn main() {
