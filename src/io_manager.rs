@@ -1,11 +1,31 @@
+use colored::*;
 use indexmap::IndexMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Error};
 
+static SUPPORTED_FORMATS: [&str; 1] = [".env"];
+
 #[allow(dead_code)]
 fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
     let mut env = IndexMap::new();
+    if std::path::Path::new(path).exists() == false {
+        println!("{} {}", "❌  Error:".red(), "File not found".bold());
+        std::process::exit(1);
+    }
+    if SUPPORTED_FORMATS.contains(&path) == false {
+        println!(
+            "{} {}",
+            "❌  Error:".red(),
+            "Unsupported file format".bold()
+        );
+        println!(
+            "{} {}",
+            "Supported formats:".bold(),
+            SUPPORTED_FORMATS.join(", ").bold()
+        );
+        std::process::exit(1);
+    }
     let file = File::open(path)?;
     let reader = BufReader::new(file);
     for line in reader.lines() {
