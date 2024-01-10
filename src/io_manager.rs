@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Error};
 
-static SUPPORTED_FORMATS: [&str; 1] = [".env"];
+static SUPPORTED_FORMATS: [&str; 1] = ["env"];
 
 #[allow(dead_code)]
 fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
@@ -13,7 +13,8 @@ fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
         println!("{} {}", "❌  Error:".red(), "File not found".bold());
         std::process::exit(1);
     }
-    if SUPPORTED_FORMATS.contains(&path) == false {
+    let format = path.split('.').last().unwrap();
+    if SUPPORTED_FORMATS.contains(&format) == false {
         println!(
             "{} {}",
             "❌  Error:".red(),
@@ -99,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_read_env() {
-        let env = read_dot_env("test.env.example").unwrap();
+        let env = read_dot_env("test.env").unwrap();
         assert_eq!(env.get("HELLO").unwrap(), "ADELE");
         assert_eq!(env.get("TAYLOR").unwrap(), "SWIFT");
     }
@@ -140,7 +141,7 @@ mod tests {
 
     #[test]
     fn test_generate_dot_env_file() {
-        generate_dot_env_file("test.env.example").unwrap();
+        generate_dot_env_file("test.env").unwrap();
         let mut file = File::open(".env.example").unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
