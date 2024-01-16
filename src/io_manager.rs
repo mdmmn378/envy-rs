@@ -36,7 +36,7 @@ fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
             continue;
         }
         let mut split = line.split('=');
-        let key = split.next().unwrap();
+        let key = split.next().unwrap().trim();
         let val = split.next().unwrap();
         env.insert(key.to_string(), clean_text(val));
     }
@@ -86,10 +86,15 @@ fn remove_comments(text: &str) -> String {
     text
 }
 
-pub fn generate_dot_env_file(path: &str) -> Result<(), Error> {
+pub fn generate_dot_env_file(dry_run: bool, path: &str) -> Result<(), Error> {
     let env = read_dot_env(path)?;
-    let env_string = generate_dot_env_string(env);
+    let mut env_string = generate_dot_env_string(env);
+    env_string.push_str("\n");
     let mut file = File::create(".env.example")?;
+    if dry_run {
+        println!("{}", env_string.strip_suffix("\n").unwrap());
+        return Ok(());
+    }
     file.write_all(env_string.as_bytes())?;
     Ok(())
 }
@@ -141,7 +146,7 @@ mod tests {
 
     #[test]
     fn test_generate_dot_env_file() {
-        generate_dot_env_file("test.env").unwrap();
+        generate_dot_env_file(false, "test.env").unwrap();
         let mut file = File::open(".env.example").unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
