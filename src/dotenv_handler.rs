@@ -1,32 +1,13 @@
-use colored::*;
 use indexmap::IndexMap;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufRead, BufReader, Error};
 
-static SUPPORTED_FORMATS: [&str; 1] = ["env"];
+use anyhow::Result;
 
 #[allow(dead_code)]
-fn read_dot_env(path: &str) -> Result<IndexMap<String, String>, Error> {
+fn read_dotenv(path: &str) -> Result<IndexMap<String, String>, Error> {
     let mut env = IndexMap::new();
-    if std::path::Path::new(path).exists() == false {
-        println!("{} {}", "❌  Error:".red(), "File not found".bold());
-        std::process::exit(1);
-    }
-    let format = path.split('.').last().unwrap();
-    if SUPPORTED_FORMATS.contains(&format) == false {
-        println!(
-            "{} {}",
-            "❌  Error:".red(),
-            "Unsupported file format".bold()
-        );
-        println!(
-            "{} {}",
-            "Supported formats:".bold(),
-            SUPPORTED_FORMATS.join(", ").bold()
-        );
-        std::process::exit(1);
-    }
     let file = File::open(path)?;
     let reader = BufReader::new(file);
     for line in reader.lines() {
@@ -65,20 +46,8 @@ fn get_type(value: &str) -> &str {
     }
 }
 
-#[allow(dead_code)]
-fn generate_dot_env_string(env: IndexMap<String, String>) -> String {
-    let mut env_string = String::new();
-    for (key, val) in env {
-        let val_type = get_type(&val);
-        env_string.push_str(&format!("{}={}\n", key, val_type));
-    }
-    env_string = env_string.strip_suffix("\n").unwrap().to_string();
-    env_string
-}
-
 fn remove_comments(text: &str) -> String {
     let mut text = text.to_string();
-    // From: # This is a comment, To: ""
     let hash_index = text.find('#').unwrap_or(text.len());
     let last_index = text.len();
     text.replace_range(hash_index..last_index, "");
@@ -86,17 +55,28 @@ fn remove_comments(text: &str) -> String {
     text
 }
 
-pub fn generate_dot_env_file(dry_run: bool, path: &str) -> Result<(), Error> {
-    let env = read_dot_env(path)?;
-    let mut env_string = generate_dot_env_string(env);
+#[allow(dead_code)]
+fn generate_dotenv_string(env: IndexMap<String, String>) -> Result<String> {
+    let mut env_string = String::new();
+    for (key, val) in env {
+        let val_type = get_type(&val);
+        env_string.push_str(&format!("{}={}\n", key, val_type));
+    }
+    env_string = env_string.strip_suffix("\n").unwrap().to_string();
+    Ok(env_string)
+}
+
+pub fn generate_dotenv_file(dry_run: bool, path: &str) -> Result<String> {
+    let env = read_dotenv(path)?;
+    let mut env_string = generate_dotenv_string(env)?;
     env_string.push_str("\n");
     let mut file = File::create(".env.example")?;
     if dry_run {
         println!("{}", env_string.strip_suffix("\n").unwrap());
-        return Ok(());
+        return Ok(("").to_string());
     }
     file.write_all(env_string.as_bytes())?;
-    Ok(())
+    Ok(".env.example".to_string())
 }
 
 #[cfg(test)]
@@ -105,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_read_env() {
-        let env = read_dot_env("test.env").unwrap();
+        let env = read_dotenv("tests/fixtures/test.env").unwrap();
         assert_eq!(env.get("HELLO").unwrap(), "ADELE");
         assert_eq!(env.get("TAYLOR").unwrap(), "SWIFT");
     }
@@ -123,11 +103,11 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_dot_env_string() {
+    fn test_generate_dotenv_string() {
         let mut env = IndexMap::new();
         env.insert("HELLO".to_string(), "ADELE".to_string());
         env.insert("WORLD".to_string(), "21".to_string());
-        let env_string = generate_dot_env_string(env);
+        let env_string = generate_dotenv_string(env).unwrap();
         assert_eq!(env_string, "HELLO=string\nWORLD=int");
     }
 
@@ -145,14 +125,14 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_dot_env_file() {
-        generate_dot_env_file(false, "test.env").unwrap();
+    fn test_generate_dotenv_file() {
+        generate_dotenv_file(false, "tests/fixtures/test.env").unwrap();
         let mut file = File::open(".env.example").unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
         assert_eq!(
             contents,
-            "HELLO=string\nTAYLOR=string\nAGE=int\nSCORE=float\nACTIVE=bool"
+            "HELLO=string\nTAYLOR=string\nAGE=int\nSCORE=float\nACTIVE=bool\n"
         );
     }
 }

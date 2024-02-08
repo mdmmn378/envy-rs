@@ -1,11 +1,19 @@
 [package]
-name = "envy"
-version = "0.3.0"
+name = "envy-mask"
+version = "0.4.0"
 edition = "2021"
+authors = ["Mamun <mdmmn378@gmail.com>"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "envy"
+path = "src/main.rs"
+
 
 [dependencies]
+
 clap = { version = "4.4.14", features = ["derive"] }
 colored = "2.1.0"
 indexmap = "2.1.0"
+anyhow = "1.0.79"
+assert_cmd = "2.0.13"
+toml = "0.8.10"
