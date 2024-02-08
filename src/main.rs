@@ -40,9 +40,12 @@ fn generate(val: &clap::ArgMatches) {
 }
 
 fn main() {
-    let mut cmd = Command::new("envy").subcommand_required(true);
+    let version = env!("CARGO_PKG_VERSION");
+    let mut cmd = Command::new("envy")
+        .version(version)
+        .arg_required_else_help(true);
     let sub_generate = Command::new("generate")
-        .about("Generate a new .env file")
+        .about("Generate a new masked config file")
         .arg(
             clap::Arg::new("path")
                 .help("Path to the .env file to generate")
