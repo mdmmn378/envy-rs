@@ -1,0 +1,53 @@
+title = "string"
+
+[[products]]
+name = "string"
+price = 0.0
+
+[[products]]
+name = "string"
+price = 0.0
+
+[application]
+services = ["string", "string", "string"]
+version = "string"
+
+[[data.clients]]
+id = 0
+name = "string"
+
+[[data.clients]]
+id = 0
+name = "string"
+
+[database]
+connection_max = 0
+enabled = false
+ports = [0, 0, 0]
+server = "string"
+
+[database.credentials]
+password = "string"
+username = "string"
+
+[features]
+feature_x = false
+feature_y = false
+feature_z = false
+
+[[metrics.counters]]
+labels = ["string", "string"]
+name = "string"
+
+[[metrics.histograms]]
+buckets = [0.0, 0.0, 0.0, 0.0]
+name = "string"
+
+[server]
+environment = "string"
+hostname = "string"
+ip = "string"
+
+[server.logging]
+file = "string"
+level = "string"
