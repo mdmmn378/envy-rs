@@ -1,0 +1,51 @@
+# Example TOML configuration file for a web application
+
+title = "WebApp Configuration"
+
+[database]
+# Database configuration
+server = "192.168.1.1"
+ports = [8001, 8001, 8002]
+connection_max = 5000
+enabled = true
+[database.credentials]
+username = "dbuser"
+password = "dbpassword"
+
+[server]
+# Server configuration
+ip = "192.168.1.2"
+hostname = "example.com"
+environment = "production"
+[server.logging]
+level = "info"
+file = "logs/server.log"
+
+[application]
+# Application specific configuration
+version = "1.0.0"
+services = ["web", "database", "cache"]
+[data]
+# Complex data example
+clients = [{ id = 1, name = "Client A" }, { id = 2, name = "Client B" }]
+[[products]]
+name = "Product 1"
+price = 10.0
+[[products]]
+name = "Product 2"
+price = 20.0
+
+[features]
+# Feature toggles
+feature_x = true
+feature_y = false
+feature_z = false
+
+[metrics]
+# Metrics for monitoring
+[[metrics.histograms]]
+name = "request_duration_ms"
+buckets = [0.1, 0.3, 1.2, 5.0]
+[[metrics.counters]]
+name = "http_requests_total"
+labels = ["method", "endpoint"]

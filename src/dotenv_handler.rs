@@ -48,7 +48,6 @@ fn get_type(value: &str) -> &str {
 
 fn remove_comments(text: &str) -> String {
     let mut text = text.to_string();
-    // From: # This is a comment, To: ""
     let hash_index = text.find('#').unwrap_or(text.len());
     let last_index = text.len();
     text.replace_range(hash_index..last_index, "");
@@ -67,17 +66,17 @@ fn generate_dotenv_string(env: IndexMap<String, String>) -> Result<String> {
     Ok(env_string)
 }
 
-pub fn generate_dotenv_file(dry_run: bool, path: &str) -> Result<()> {
+pub fn generate_dotenv_file(dry_run: bool, path: &str) -> Result<String> {
     let env = read_dotenv(path)?;
     let mut env_string = generate_dotenv_string(env)?;
     env_string.push_str("\n");
     let mut file = File::create(".env.example")?;
     if dry_run {
         println!("{}", env_string.strip_suffix("\n").unwrap());
-        return Ok(());
+        return Ok(("").to_string());
     }
     file.write_all(env_string.as_bytes())?;
-    Ok(())
+    Ok(".env.example".to_string())
 }
 
 #[cfg(test)]
@@ -86,7 +85,7 @@ mod tests {
 
     #[test]
     fn test_read_env() {
-        let env = read_dotenv("test.env").unwrap();
+        let env = read_dotenv("tests/fixtures/test.env").unwrap();
         assert_eq!(env.get("HELLO").unwrap(), "ADELE");
         assert_eq!(env.get("TAYLOR").unwrap(), "SWIFT");
     }
@@ -127,7 +126,7 @@ mod tests {
 
     #[test]
     fn test_generate_dotenv_file() {
-        generate_dotenv_file(false, "test.env").unwrap();
+        generate_dotenv_file(false, "tests/fixtures/test.env").unwrap();
         let mut file = File::open(".env.example").unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();

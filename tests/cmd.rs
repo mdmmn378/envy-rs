@@ -7,7 +7,20 @@ mod tests {
     #[test]
     fn test_generate() {
         let mut cmd = Command::cargo_bin("envy").unwrap();
-        cmd.arg("generate").arg("test.env").assert().success();
+        cmd.arg("generate")
+            .arg("tests/fixtures/test.env")
+            .assert()
+            .success();
+    }
+
+    #[test]
+    fn test_generate_dry_run() {
+        let mut cmd = Command::cargo_bin("envy").unwrap();
+        cmd.arg("generate")
+            .arg("tests/fixtures/test.toml")
+            .arg("--dry-run")
+            .assert()
+            .success();
     }
 
     #[test]
