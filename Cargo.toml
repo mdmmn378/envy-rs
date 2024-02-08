@@ -3,6 +3,8 @@ name = "envy-mask"
 version = "0.4.0"
 edition = "2021"
 authors = ["Mamun <mdmmn378@gmail.com>"]
+description = "A Config File Example Generator"
+license = "MIT"
 
 [[bin]]
 name = "envy"
