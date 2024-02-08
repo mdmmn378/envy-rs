@@ -1,0 +1,12 @@
+pre-commit:
+  commands:
+    format:
+      glob: "*.rs"
+      run: cargo fmt
+    
+    check:
+      run: "cargo check"
+    
+    test:
+      run: "cargo test"
+
