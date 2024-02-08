@@ -52,11 +52,11 @@ pub fn generate_toml_file(dry_run: bool, path: &str) -> Result<String> {
     let value = read_toml(path)?;
     let mut value = value.clone();
     replace_leaves(&mut value);
-    let mut file = File::create("example.toml")?;
     if dry_run {
         println!("{}", value);
         return Ok(("").to_string());
     }
+    let mut file = File::create("example.toml")?;
     file.write_all(toml::to_string(&value)?.as_bytes())?;
 
     Ok("example.toml".to_string())
