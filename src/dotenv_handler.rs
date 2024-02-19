@@ -59,6 +59,7 @@ fn remove_comments(text: &str) -> String {
 fn generate_dotenv_string(env: IndexMap<String, String>) -> Result<String> {
     let mut env_string = String::new();
     for (key, val) in env {
+        let val = val.trim();
         let val_type = get_type(&val);
         env_string.push_str(&format!("{}={}\n", key, val_type));
     }
@@ -107,8 +108,9 @@ mod tests {
         let mut env = IndexMap::new();
         env.insert("HELLO".to_string(), "ADELE".to_string());
         env.insert("WORLD".to_string(), "21".to_string());
+        env.insert("AVAILABLE".to_string(), " true".to_string());
         let env_string = generate_dotenv_string(env).unwrap();
-        assert_eq!(env_string, "HELLO=string\nWORLD=int");
+        assert_eq!(env_string, "HELLO=string\nWORLD=int\nAVAILABLE=bool");
     }
 
     #[test]
