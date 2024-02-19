@@ -1,6 +1,6 @@
 [package]
 name = "envy-mask"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 authors = ["Mamun <mdmmn378@gmail.com>"]
 description = "A Config File Example Generator"
