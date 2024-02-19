@@ -13,7 +13,7 @@ Envy is a tool that generates example configuration files from your existing `.e
 Install the binary with the following command:
 
 ```sh
-cargo install --path .
+cargo install envy-mask
 ```
 
 ## Usage
