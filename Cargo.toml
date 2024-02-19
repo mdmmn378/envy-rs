@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Mamun <mdmmn378@gmail.com>"]
 description = "A Config File Example Generator"
 license = "MIT"
+repository = "https://github.com/mdmmn378/envy-rs"
 
 [[bin]]
 name = "envy"
